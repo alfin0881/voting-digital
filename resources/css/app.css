@@ -1,0 +1,837 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   E-Voting — Design System
+   --------------------------------------------------------------------------
+   Satu-satunya sumber warna, elevasi, dan bentuk untuk seluruh aplikasi
+   (halaman pemilih + panel admin).
+
+   Semua komponen membaca token --c-*, bukan warna tetap, sehingga tema
+   terang/gelap bisa ditukar lewat atribut `data-mode` pada <html> tanpa
+   menulis ulang komponen.
+
+   Token navigasi (--c-nav-*) DIKELOMPOKKAN terpisah dan punya nilai berbeda
+   per tema. Sidebar admin tetap terasa seperti "produk" tersendiri, tetapi
+   warnanya ikut berubah saat tema terang/gelap ditukar.
+
+   Struktur file:
+     1. Token warna (terang & gelap)
+     2. Base / tipografi
+     3. Animasi
+     4. Elevasi & permukaan
+     5. Navigasi (sidebar admin)
+     6. Tabel, badge, scrollbar, aksesibilitas
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. TOKEN WARNA
+   -------------------------------------------------------------------------- */
+
+:root,
+html[data-mode='dark'] {
+  color-scheme: dark;
+
+  /* Permukaan */
+  --c-bg-page: #0a0f1d;
+  --c-bg-surface: #121a2c;
+  --c-bg-elevated: #1a2438;
+  --c-bg-subtle: #0f1626;
+
+  /* Teks & garis */
+  --c-text: #eef2f8;
+  --c-text-muted: #94a3b8;
+  --c-text-subtle: #7d8ea6;
+  --c-border: #24304a;
+  --c-border-strong: #33415e;
+
+  /* Aksen utama */
+  --c-primary: #6366f1;
+  --c-primary-hover: #818cf8;
+  --c-primary-dark: #a5b4fc;
+  --c-primary-soft: rgba(99, 102, 241, 0.16);
+  --c-primary-soft-border: rgba(99, 102, 241, 0.45);
+
+  /* Status */
+  --c-sukses: #10b981;
+  --c-peringatan: #f59e0b;
+  --c-bahaya: #f43f5e;
+
+  /* Aksen tambahan */
+  --c-sky: #38bdf8;
+  --c-violet: #a78bfa;
+  --c-emerald: #34d399;
+  --c-amber: #fbbf24;
+  --c-rose: #fb7185;
+
+  --c-sky-soft: rgba(56, 189, 248, 0.16);
+  --c-violet-soft: rgba(167, 139, 250, 0.16);
+  --c-emerald-soft: rgba(52, 211, 153, 0.16);
+  --c-amber-soft: rgba(251, 191, 36, 0.16);
+  --c-rose-soft: rgba(251, 113, 133, 0.16);
+
+  /* Elevasi & kilau */
+  --c-shadow: rgba(2, 6, 23, 0.6);
+  --c-shadow-soft: rgba(2, 6, 23, 0.35);
+  --c-glow: rgba(99, 102, 241, 0.35);
+  --c-shimmer: rgba(255, 255, 255, 0.07);
+  --c-highlight: rgba(255, 255, 255, 0.06);
+
+  /* Navigasi — sidebar gelap pekat di tema gelap. */
+  --c-nav-1: #0b1120;
+  --c-nav-2: #1e1b4b;
+  --c-nav-teks: rgba(255, 255, 255, 0.62);
+  --c-nav-teks-aktif: #ffffff;
+  --c-nav-teks-lemah: rgba(255, 255, 255, 0.35);
+  --c-nav-hover: rgba(255, 255, 255, 0.06);
+  --c-nav-aktif: rgba(255, 255, 255, 0.11);
+  --c-nav-garis: rgba(255, 255, 255, 0.09);
+  --c-nav-ring: rgba(255, 255, 255, 0.05);
+  --c-nav-tombol: rgba(255, 255, 255, 0.1);
+  --c-nav-tombol-hover: rgba(255, 255, 255, 0.2);
+  --c-nav-keluar: #fca5a5;
+  --c-nav-bayang: rgba(2, 6, 23, 0.6);
+  --c-nav-ornamen-1: 0.25;
+  --c-nav-ornamen-2: 0.1;
+}
+
+html[data-mode='light'] {
+  color-scheme: light;
+
+  /* Latar sengaja sedikit abu-abu (bukan putih murni) supaya kartu putih
+     tetap terlihat "terangkat" dari halaman. */
+  --c-bg-page: #f5f6fa;
+  --c-bg-surface: #ffffff;
+  --c-bg-elevated: #ffffff;
+  --c-bg-subtle: #f8fafc;
+
+  --c-text: #0f172a;
+  --c-text-muted: #5b6b83;
+  --c-text-subtle: #7c8ba1;
+  --c-border: #e4e8f0;
+  --c-border-strong: #cbd5e1;
+
+  --c-primary: #4f46e5;
+  --c-primary-hover: #4338ca;
+  --c-primary-dark: #3730a3;
+  --c-primary-soft: rgba(79, 70, 229, 0.08);
+  --c-primary-soft-border: rgba(79, 70, 229, 0.28);
+
+  --c-sukses: #059669;
+  --c-peringatan: #b45309;
+  --c-bahaya: #e11d48;
+
+  --c-sky: #0284c7;
+  --c-violet: #7c3aed;
+  --c-emerald: #059669;
+  --c-amber: #b45309;
+  --c-rose: #e11d48;
+
+  --c-sky-soft: rgba(2, 132, 199, 0.1);
+  --c-violet-soft: rgba(124, 58, 237, 0.1);
+  --c-emerald-soft: rgba(5, 150, 105, 0.1);
+  --c-amber-soft: rgba(180, 83, 9, 0.1);
+  --c-rose-soft: rgba(225, 29, 72, 0.09);
+
+  --c-shadow: rgba(15, 23, 42, 0.07);
+  --c-shadow-soft: rgba(15, 23, 42, 0.04);
+  --c-glow: rgba(79, 70, 229, 0.18);
+  --c-shimmer: rgba(15, 23, 42, 0.05);
+  --c-highlight: rgba(255, 255, 255, 0.9);
+
+  /* Navigasi — sidebar terang dengan sentuhan indigo, sejalan dengan
+     permukaan halaman pada tema terang. */
+  --c-nav-1: #ffffff;
+  --c-nav-2: #eef2ff;
+  --c-nav-teks: #5b6b83;
+  --c-nav-teks-aktif: #0f172a;
+  --c-nav-teks-lemah: #64748b;
+  --c-nav-hover: rgba(79, 70, 229, 0.07);
+  --c-nav-aktif: rgba(79, 70, 229, 0.11);
+  --c-nav-garis: rgba(15, 23, 42, 0.08);
+  --c-nav-ring: rgba(15, 23, 42, 0.06);
+  --c-nav-tombol: rgba(15, 23, 42, 0.05);
+  --c-nav-tombol-hover: rgba(15, 23, 42, 0.1);
+  --c-nav-keluar: #dc2626;
+  --c-nav-bayang: rgba(15, 23, 42, 0.12);
+  --c-nav-ornamen-1: 0.1;
+  --c-nav-ornamen-2: 0.05;
+}
+
+/* Lebar sidebar dalam keadaan terbuka & ciut (desktop) — sama di dua tema. */
+:root {
+  --c-sidebar-1: 268px;
+  --c-sidebar-2: 76px;
+}
+
+/* --------------------------------------------------------------------------
+   2. BASE & TIPOGRAFI
+   -------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    /* Basis 15px: panel admin padat dengan banyak kolom; teks 16px membuat
+       tabel mudah tergulir ke samping. Semua ukuran rem Tailwind ikut diskalakan. */
+    font-size: 15px;
+    /* Angka kolom (nomor suara, tabel, statistik) selalu rata Sejajar. */
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'ss01';
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+
+    /* Sediakan ruang scrollbar secara permanen. Tanpa ini, saat modal membuka
+       dan body dikunci, scrollbar hilang dan seluruh halaman bergeser. */
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    background-color: var(--c-bg-page);
+    color: var(--c-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100dvh;
+    /* clip (bukan hidden) supaya tidak membuat scroll container baru dan
+       header sticky tetap berfungsi, tapi halaman tidak pernah melebar. */
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.015em;
+  }
+
+  /* Transisi halus saat tema ditukar. Dibatasi ke properti warna/garis agar
+     tidak membuat tabel terasa berat saat digulir. */
+  body,
+  .kasya-kartu,
+  .kasya-panel,
+  .menu-item,
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    transition-property: background-color, border-color, color, box-shadow, opacity;
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Tailwind v4 mengubah kursor tombol menjadi 'default'. Kembalikan ke pointer
+     agar tombol & elemen yang bisa diklik terlihat bisa diklik. */
+  button:not(:disabled),
+  [role='button']:not(:disabled),
+  summary,
+  select:not(:disabled),
+  input[type='checkbox']:not(:disabled),
+  input[type='file']:not(:disabled) {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  /* Tombol & form harus mewarisi ukuran teks yang diminta className-nya. */
+  input,
+  textarea,
+  select,
+  button {
+    font-family: inherit;
+  }
+
+  /* Placeholder terlalu gelap di mode terang bikin input terbaca kosong. */
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--c-text-subtle);
+    opacity: 1;
+  }
+}
+
+/* Hanya di layar kecil, input minimal 16px supaya iOS tidak auto-zoom
+   saat difokuskan. Di desktop boleh lebih kecil agar tabel tidak makan ruang. */
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   3. ANIMASI
+   -------------------------------------------------------------------------- */
+
+@keyframes kasya-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes kasya-scale-up {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes kasya-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes kasya-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Putar linear untuk spinner: durasi sedikit di bawah 1 detik supaya terasa
+   "hidup" tapi tidak berputar terlalu cepat sampai bikin pusing. */
+@keyframes kasya-putar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tiga titik berurutan — penanda "masih bekerja" yang lebih ramah mata
+   daripada teks "Memuat..." yang diam. */
+@keyframes kasya-titik {
+  0%,
+  70%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  35% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+/* Cincin denyut di belakang logo saat layar penuh dimuat. */
+@keyframes kasya-denut-luar {
+  0% {
+    transform: scale(0.82);
+    opacity: 0.55;
+  }
+  70%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Bilah progres tak tahu — bergerak bolak-balik, bukan muter. */
+@keyframes kasya-melintas {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+/* Napas halus untuk kerangka: isian muncul sedikit bergantian. */
+@keyframes kasya-muncul-kerangka {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes kasya-pulse-ring {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes kasya-spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Cincin cahaya berputar untuk aksen "live" pada kartu status. */
+@keyframes kasya-orbit {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) translateX(120%);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg) translateX(120%);
+  }
+}
+
+/* Diagram donat "menember" dari nol — dipakai mode layar besar (proyektor). */
+@keyframes kasya-pie-fill {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Tiap busur menyala sedikit bergantian setelah lingkarannya jadi. */
+@keyframes kasya-pie-busur {
+  0% {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Teks di bawah pie muncul menyusul, satu per satu. */
+@keyframes kasya-muncul-bawah {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer components {
+  .animate-fade-in {
+    animation: kasya-fade-in 0.45s ease-out both;
+  }
+  .animate-scale-up {
+    animation: kasya-scale-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .animate-slide-up {
+    animation: kasya-slide-up 0.45s ease-out both;
+  }
+
+  /* Skeleton loading */
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--c-border);
+    border-radius: 0.5rem;
+  }
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--c-shimmer),
+      transparent
+    );
+    animation: kasya-shimmer 1.6s infinite;
+    /* Jeda sesuai posisi baris, supaya kilau menelusuri halaman dari atas
+       ke bawah alih-alih berkedip serempak. Diisi lewat style="--tunda". */
+    animation-delay: var(--tunda, 0ms);
+  }
+
+  /* Isian kerangka ikut muncul bergantian supaya terasa "diproses", bukan
+     sekadar kotak abu-abu yang tiba-tiba ada. */
+  .skeleton-muncul {
+    animation: kasya-muncul-kerangka 0.4s ease-out both;
+    animation-delay: var(--tunda, 0ms);
+  }
+
+  .denyut {
+    animation: kasya-pulse-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Spinner: putar linear + garis ujungnya membulat. */
+  .kasya-putar {
+    transform-origin: 50% 50%;
+    animation: kasya-putar 0.7s linear infinite;
+  }
+
+  /* Tiga titik berurutan. Pakai <span class="titik-muat"><i/><i/><i/></span>
+     supaya warna ikut currentColor dan otomatis cocok dengan tema. */
+  .titik-muat {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .titik-muat > i {
+    width: 4px;
+    height: 4px;
+    border-radius: 9999px;
+    background-color: currentColor;
+    animation: kasya-titik 1.1s ease-in-out infinite;
+  }
+  .titik-muat > i:nth-child(2) {
+    animation-delay: 0.14s;
+  }
+  .titik-muat > i:nth-child(3) {
+    animation-delay: 0.28s;
+  }
+
+  /* Cincin yang mengembang lalu memudar di belakang logo — penanda layar
+     masih initializing (dipakai LayarMuat penuh). */
+  .cincin-muat {
+    animation: kasya-denut-luar 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Bilah \"sedang memproses\" yang bolak-balik. Dipakai di bawah teks
+     \"Memuat...\" supaya jelas prosesnya jalan, bukan macet. */
+  .baris-muat {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--c-border);
+  }
+  .baris-muat::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    width: 32%;
+    border-radius: 9999px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--c-primary),
+      transparent
+    );
+    animation: kasya-melintas 1.35s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+
+  /* Cincin dekoratif pada hero/kartu gradient. */
+  .orbit {
+    animation: kasya-orbit 14s linear infinite;
+    transform-origin: center;
+  }
+
+  /* Donat mode layar besar: lingkaran lalu busur, lalu teks di bawahnya. */
+  .kasya-pie-masuk {
+    animation: kasya-pie-fill 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .kasya-pie-busur {
+    animation: kasya-pie-busur 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+
+  .kasya-muncul {
+    animation: kasya-muncul-bawah 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. ELEVALASI & PERMUKAAN
+   -------------------------------------------------------------------------- */
+
+/* Bayangan tidak bisa pakai rgba(var(--x)) di Tailwind v4, jadi ditulis
+   di sini memakai token --c-shadow supaya ikut berubah bersama tema. */
+@layer components {
+  .kasya-kartu {
+    /* min-width:0 mencegah kartu berisi tabel/grafik melebarkan kolom grid. */
+    min-width: 0;
+    background-color: var(--c-bg-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 1rem; /* rounded-2xl — lebih "product" daripada rounded-3xl */
+    box-shadow:
+      0 1px 2px var(--c-shadow-soft),
+      0 8px 24px -16px var(--c-shadow);
+  }
+
+  /* Kartu yang bisa diklik: angkat sedikit + garis tepi menyala. */
+  .kasya-kartu-aktif {
+    transition:
+      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
+  }
+  .kasya-kartu-aktif:hover {
+    transform: translateY(-3px);
+    border-color: var(--c-primary-soft-border);
+    box-shadow:
+      0 2px 4px var(--c-shadow-soft),
+      0 18px 40px -20px var(--c-glow);
+  }
+
+  /* Alias supaya class lama (kasya-card) tetap jalan tanpa diubah semua file. */
+  .kasya-card {
+    min-width: 0;
+    background-color: var(--c-bg-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 1rem;
+    box-shadow:
+      0 1px 2px var(--c-shadow-soft),
+      0 8px 24px -16px var(--c-shadow);
+  }
+  .kasya-card-hover {
+    transition:
+      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
+  }
+  .kasya-card-hover:hover {
+    transform: translateY(-3px);
+    border-color: var(--c-primary-soft-border);
+    box-shadow:
+      0 2px 4px var(--c-shadow-soft),
+      0 18px 40px -20px var(--c-glow);
+  }
+
+  /* Latar "sumbu Y" untuk panel navigasi internal (tab, filter, step). */
+  .kasya-rel {
+    background-color: var(--c-bg-page);
+    border: 1px solid var(--c-border);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. NAVIGASI — SIDEBAR ADMIN
+   -------------------------------------------------------------------------- */
+
+/* Item menu pakai model "pill": latar Highlight + garis penanda kiri.
+   Batang penanda tumbuh dari 0 -> 60% saat aktif supaya gerakannya halus. */
+@layer components {
+  .menu-item {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .menu-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 3px;
+    height: 0;
+    border-radius: 0 999px 999px 0;
+    background: linear-gradient(180deg, var(--c-primary-hover), var(--c-primary));
+    transform: translateY(-50%);
+    transition: height 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .menu-item.aktif::before {
+    height: 60%;
+  }
+
+  /* Kilau halus yang muncul saat kursor di atas item menu. */
+  .menu-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--c-nav-hover);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .menu-item:hover::after {
+    opacity: 1;
+  }
+  .menu-item.aktif::after {
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5b. SKALA TIPOGRAFI & IRAMA PANEL ADMIN
+   --------------------------------------------------------------------------
+   Panel admin memakai ukuran teks satu tingkat lebih besar daripada halaman
+   pemilih agar nyaman dibaca dari kursi operator. Semua halaman admin berada
+   di dalam .kasya-admin, jadi skala ini berlaku seragam tanpa perlu menulis
+   ulang ukuran di setiap file.
+
+   Nilai `--text-*` milik Tailwind ditimpa di cakupan ini, lalu kelas ukuran
+   arbitrer (text-[13px] dsb.) diselaraskan ke skala yang sama. */
+.kasya-admin {
+  --text-xs: 12px;
+  --text-xs--line-height: 1.5;
+  --text-sm: 14px;
+  --text-sm--line-height: 1.5;
+  --text-base: 15px;
+  --text-base--line-height: 1.55;
+  --text-lg: 18px;
+  --text-lg--line-height: 1.45;
+  --text-xl: 21px;
+  --text-xl--line-height: 1.35;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 1.3;
+}
+
+/* Selaraskan ukuran arbitrer ke skala di atas (+1px). */
+.kasya-admin .text-\[10px\] {
+  font-size: 11px;
+}
+.kasya-admin .text-\[11px\] {
+  font-size: 12px;
+}
+.kasya-admin .text-\[12px\] {
+  font-size: 13px;
+}
+.kasya-admin .text-\[13px\] {
+  font-size: 14px;
+}
+.kasya-admin .text-\[15px\] {
+  font-size: 16px;
+}
+.kasya-admin .text-\[17px\] {
+  font-size: 18px;
+}
+
+/* Irama vertikal halaman: jarak antar-blok utama selalu 24px. Margin milik
+   anak langsung dibersihkan supaya tidak ada jarak ganda. */
+.kasya-admin main {
+  gap: 1.5rem;
+}
+.kasya-admin main > * {
+  margin-block: 0;
+}
+
+/* --------------------------------------------------------------------------
+   6. TABEL, SCROLLBAR, AKSESIBILITAS
+   -------------------------------------------------------------------------- */
+
+/* Kepala tabel menempel saat tabel digulir panjang. Latarnya warna solid
+   (bukan transparan) supaya teks di bawahnya tidak pernah tembus. */
+@layer components {
+  .kasya-tabel-kepala {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--c-bg-subtle);
+  }
+
+  /* Padding vertikal baris tabel. */
+  .kasya-tabel td {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  .kasya-tabel thead th {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  /* Kolom pertama ikut menempel saat tabel digulir ke samping, supaya nama
+     yang sedang dibaca tidak ikut hilang. Garis kanan tipis jadi penanda
+     bahwa kolom itu "diatas" kolom lain. */
+  .kasya-sematkan-1 tbody td:first-child,
+  .kasya-sematkan-1 thead th:first-child {
+    position: sticky;
+    left: 0;
+    background-color: var(--c-bg-surface);
+    box-shadow: inset -1px 0 0 var(--c-border);
+  }
+  .kasya-sematkan-1 thead th:first-child {
+    background-color: var(--c-bg-subtle);
+    z-index: 3;
+  }
+
+  /* Sel yang menempel harus ikut berubah saat barus di-hover, kalau tidak
+     kelihatan seperti "lubang" yang tidak ikut tersorot. */
+  .kasya-sematkan-1 tbody tr:hover td:first-child {
+    background-color: var(--c-primary-soft);
+  }
+}
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--c-border-strong) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--c-border-strong);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--c-text-subtle);
+  }
+
+  /* Aksesibilitas: cincin fokus tebal & konsisten di mana saja. */
+  :focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Input sudah punya ring fokus sendiri; hindari dua lapis garis. */
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* Cetak laporan: buang navigasi & dekorasi, sisakan isi. */
+@media print {
+  .kasya-tanpa-cetak {
+    display: none !important;
+  }
+  .kasya-kartu,
+  .kasya-card {
+    box-shadow: none !important;
+    border: 1px solid #d4d4d8 !important;
+  }
+}
+/* --------------------------------------------------------------------------
+   Sumber kelas Tailwind untuk aplikasi Inertia.
+   Tailwind v4 memindai berkas ini + semua komponen React di resources/js.
+   -------------------------------------------------------------------------- */
+@source '../js/**/*.jsx';
+@source '../js/**/*.js';
+@source '../views/**/*.blade.php';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
